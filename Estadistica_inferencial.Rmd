@@ -1,0 +1,161 @@
+---
+title: "Estadística Inferencia"
+output:
+  html_document:
+    df_print: paged
+---
+# Distribuciones de muestreo fundamentales y descripciones de datos. 
+
+## Muestreo aleatorio
+
+
+### Población y muestras
+
+Definición: Una población consiste en la totalidad de las observaciones en las que estamos interesados
+
+Definición: Una muestra es un subconjunto de una población
+
+Definición:  Sean $X_{1},X_{2},...,X_{n}$ n variables independientes, cada una con una misma distribución de probabilidad $f(x)$. Definimos $X_{1},...,X_{n}$ con una muestra aleatoria de tamaño $n$ de la población $f(x)$ y escribimos su distribución de probabilidad conjunta como $$f(x_{1},...,x_{n})=f(x_{1})...f(x_{n})$$
+ 
+## Algunos estadísticos importantes
+
+Definición: Cualquier función de las variables aleatorias que forman una muestra aleatoria se llama estadístico 
+
+### Tendencia central en la muestra. 
+
+Definición: Si $X_{1},X_{2},...,X_{n}$ representan una muestra aleatoria de tamaño $n$, entonces **media de la muestra** se define mediante el estadístico
+$$\bar{X}= \frac{1}{n}\sum_{i=1}^{n}X_{i}$$
+Existen otros tipos de medias que se ajustan según la situación y la caracteristica de los datos u observaciones que se tienen. 
+Una de estas variaciones es el ***media truncada***, la cual calcula el promedio dejando por fuera un número fijo de valores aleatorios en cada extremo y luego encontrando la media con los valores de las observaciones restantes.
+
+Definición: si $X_{1},X_{2},...,X_{n}$ representa una muestra aleatoria de tamaño $n$, entonces la **media truncada** se define mediante el estadístico con $p$ valores más pequeños y más grandes omitidos es: 
+ $$\bar{X}=\frac{\sum_{i=p+1}^{n-p}X_{i}}{n-2p}$$
+La media es sensible a valores extremos, por lo tanto la media truncada elimina la influencia de valores extremos. 
+
+Otro tipo de media es la **media ponderada**, que se calcula multiplicando cada observación o dato $X_{i}$ con un peso $w_{i}$ ya especificado y dividiendo esta suma por la suma de los pesos
+
+Definición: Si $X_{1},X_{2},...,X_{n}$ representa una muestra aleatoria de tamaño $n$, entonces la **media ponderada** se define mediante el estadístico
+
+$$\bar{X}_{w}= \frac{\sum_{i=1}^{n}w_{i}X_{i}}{\sum_{i=1}^{n}w_{i}}$$
+Existen dos motivaciones por la cual utilizamos este tipo de promedio. 
+1. Algunos valores son intrinsecamente mas variables que otros, y estos valores con alta variabilidad se le da un peso menos. Por ejemplo si estamos tomando el promedio de multiples sensonres y uno de estos sensores tiene poca presición, entonces podemos bajar su influencia utilizando los pesos para este sensor. 
+
+2. Las observaciones o datos obtenimos no representan de manera equitativa diferentes grupos de los cuales queremos realizar mediciones. Por ejemplo debido a como un experimento en linea fue implementado fue realizado, no tenemos datos que reflejen de manera precisa todos los grupos que deseamos estudiar. Para corregir esto podemos dar pesos de mayor valor a los grupos con baja representación. 
+
+Veamos el siguiente conjunto de datos. 
+
+```{r}
+library(readr)
+state <- read_csv("data/state.csv")
+head(state)
+```
+En la tabla observamos las primeras seis filas del conjunto de datos que contiene la población y tasas de homicidio. 
+
+
+Encontremos la media de la población de los estados. 
+
+
+```{r}
+mean(state[['Population']])
+```
+
+
+```{r}
+mean(state[['Population']], trim=0.1)
+```
+
+
+### Varianza de la muestra
+La varianza debería indicar como se dispersan las observaciones a partir del promedio. Es posible tener dos conjuntos de observaciones con las mismas media o mediana, y que difieran de manera considerable en la variabilidad de sus mediciones alrededor del promedio. 
+
+Considere las siguientes mediciones, en litros, para dos muestras de jugo de naranaja envasado por las compañias A y B
+
+```{r}
+Muestra_A <-c(0.97, 1.00, 0.94, 1.03, 1.06)
+Muestra_B <-c(1.06, 1.01, 0.88, 0.91, 1.14)
+
+df<-data.frame(Muestra_A,Muestra_B)
+df
+```
+Ahora, encontremos la media de cada una de las muestras.
+```{r}
+cat("Media de la Muestra A: ", mean(Muestra_A))
+```
+```{r}
+cat("Media de la Muestra B: ", mean(Muestra_B))
+```
+Vemos que ambas muestras tienen la misma media, $1.00$ litros. ¿Cómo podemos saber cual de las dos compañias envasa de manera mas uniforme? 
+Buscamos en cual de las dos muestras la variabilidad o la dispersión de las observaciones respecto al promedio es menor. 
+
+**Definición**: Si $X_{1},X_{2},...,X_{n} representan una muestra aleatoria de tamaño $n$, entonces la **varianza de la muestra** se define con el estadistico  
+$$ S^{2} = \frac{1}{n-1}\sum_{i=1}^{n}\left(X_{i}-\bar{X}\right)^{2}$$
+El valor calculado de $S^{2}$ para una muestra dada se denota con $s^2$.
+
+```{r}
+cat("Varianza de la Muestra A", (sd(Muestra_A))^2)
+```
+
+```{r}
+cat("Varianza de la Muestra B",(sd(Muestra_B))^2)
+```
+Por lo tanto vemos que si compramos un jugo de naranja, tendríamos más confianza de que el envase seleccionado esté más cerca del promedio anunciado si lo compramos a la compañia A.
+
+**Ejemplo:** Una comparación de los precios de café en cuatro tiendas de abarrotes, seleccionadas al azar, en San Diego mostró aumentos en comparación con el mes anterior de 12,15,17 y 20 centavos para una bolsa de 1 libra. Encuentre la varianza de esta muestra aleatoria de aunmento de precio. 
+```{r}
+Aumento_cafe <-c(12,15,17,20)
+```
+
+
+```{r}
+Aumento_cafe_df <-data.frame(Aumento_cafe)
+Aumento_cafe_df
+```
+Podemos utilizar la función sd(), que corresponde a la desviación estandar, y por definición el cuadrado de esta será el valor de la varianza. 
+```{r}
+(sd(Aumento_cafe))^2
+```
+Existe una expresión alternativa para la varianza y que es un teorema:
+**Teorema:** Si $S^{2}$ es la varianza de una muestra aleatoria de tamaño $n$, podemos escribir:
+$$S^{2}=\frac{1}{n(n-1)}\left[n\sum_{i=1}^{n}X_{i}^{2}- \left(\sum_{i=1}^{n}X_{i}\right)^{2}\right]$$
+**Definición:** La **desviación estándar de la muestra, que se denota con $S$, es la raíz cuadrada positiva de la varianza de la muestra.
+
+**Ejemplo:** Encuentre la varianza de los datos 3, 4, 5, 6, 6 y 7 que representan el número de truchas atrapadas por una muestra aleatoria de 6 pescadores el 19 de junio de 1996, en el lago Muskoka.
+```{r}
+pescador <- c(1, 2, 3, 4, 5, 6)
+numero_truchas<-c(3, 4, 5, 6, 6, 7)
+```
+
+
+```{r}
+numero_truchas_df<-data.frame(pescador, numero_truchas)
+numero_truchas_df
+```
+Ahora, para encontrar la desviación estandar en R solo necesitamos utilizar la función sd()
+```{r}
+cat("La desviación estadar del numero de truchas es: ", sd(numero_truchas_df$numero_truchas) )
+```
+
+
+
+## Presentación de datos y métodos gráficos
+
+### Gráfica de caja y extensión o gráfica de caja
+
+Se midió el contenido de nicotina en una muestra aleatoria de 40 cigarrillos. Los datos se ven en la siguiente tabla.
+```{r}
+nicotina <-c(1.09, 0.85, 1.86, 1.82, 1.40, 1.92, 1.24, 1.90, 1.79, 1.64, 2.31, 1.58, 1.68, 2.46, 2.09, 1.79, 2.03, 1.51, 1.88, 1.75, 2.28, 1.70, 1.64, 2.08, 1.63, 1.74, 2.17, 0.72, 1.67, 2.37, 1.47, 2.55, 1.69, 1.37, 1.75, 1.97, 2.11, 1.85, 1.93, 1.63)
+```
+
+```{r}
+nicotina_df<-c(nicotina)
+nicotina
+```
+```{r}
+boxplot(nicotina_df)
+```
+
+
+
+
+ 
+## Distribuciones muestrales de medias
