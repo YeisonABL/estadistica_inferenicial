@@ -63,6 +63,11 @@ mean(state[['Population']])
 ```{r}
 mean(state[['Population']], trim=0.1)
 ```
+Este trim=0.1 elimina o deja de considerar el 10% de los datos en cada extremo
+
+```{r}
+weighted.mean(state[['Murder.Rate']], w=state[['Population']])
+```
 
 
 ### Varianza de la muestra
