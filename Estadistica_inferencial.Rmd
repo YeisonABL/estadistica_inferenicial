@@ -146,7 +146,9 @@ cat("La desviación estadar del numero de truchas es: ", sd(numero_truchas_df$nu
 
 ### Gráfica de caja y extensión o gráfica de caja
 
-Se midió el contenido de nicotina en una muestra aleatoria de 40 cigarrillos. Los datos se ven en la siguiente tabla.
+La gráfica de caja se basa en los percentiles y da una visualización rapida a la distribución de los datos.
+
+**Ejemplo:** Se midió el contenido de nicotina en una muestra aleatoria de 40 cigarrillos. Los datos se ven en la siguiente tabla.
 ```{r}
 nicotina <-c(1.09, 0.85, 1.86, 1.82, 1.40, 1.92, 1.24, 1.90, 1.79, 1.64, 2.31, 1.58, 1.68, 2.46, 2.09, 1.79, 2.03, 1.51, 1.88, 1.75, 2.28, 1.70, 1.64, 2.08, 1.63, 1.74, 2.17, 0.72, 1.67, 2.37, 1.47, 2.55, 1.69, 1.37, 1.75, 1.97, 2.11, 1.85, 1.93, 1.63)
 ```
@@ -159,8 +161,310 @@ nicotina
 boxplot(nicotina_df)
 ```
 
+De esta grafica podemos observar que la media de la cantidad de nicotina es alrededor de $1.7$ y los datos $0.72$ y $0.85$ como valores extremos inferiores; en tanto que la observación $2.55$ es un valor extremo moderado superior. En este ejemplo el raangi intercuartil es $0.365$, y $1.5$ veces el rango intercuartil es $0.5475$
+
+Veamos cual es la media de estos datos. 
+
+```{r}
+mean(nicotina_df)
+```
+la parte superior y la parte inferior de la caja son el percentil del $75$ y $25$. La mediana es la linea horizontal que esta dentro de la caja. Las lineas discontinuas, tambien llamadas como bigotes se extienden desde la parte superior e inferior del cuadro para indicar el rango de la mayor parte de los datos. Por defecto, la función de $R$ extiende los bigotes al punto más allá de la caj, execepto que no ira mas allá de $1.5$ veces el rango intercuartil.
+
+### Gráfica de cuantiles. 
+
+El propósito de las gráficas de cuantiles consiste en describir, en forma de muestra, la función de distribución acumulada. 
+
+**Definición** Un cuantil de una muestra, $q(f)$, es un valor para el que una fracción específica $f$ de los valores de los datos es menor que o igual a $q(f)$
+
+Una gráfica de cuantiles simplemente *gráfica los valores de los datos en el eje vertical contra una evaluación empírica de la fracción de observaciones excedidad por los valores de los datos*
 
 
 
- 
+### Detección de desviaciones de la normalidad.
+
+
+##Gráfica de cuantiles-cuantiles normales. 
+
+La metodología incluye una gráfica de los cuantiles empíricos recién presentados contra el cuantil correspondiente de la distribución normal
+
+**Definición** La **gráfica de cuantiles-cuantiles normales* es una grafica de $y_{(i)}$ observaciones ordenadas contra $q_{0,1}(f_{i})$, donde $f_{i}=\frac{i-\fra{3}{8}}{n+\frac{1}{4}}$
+
+Una relación cercana a una línea recta sugiere que los datos provienen de una distribución normal. La intersección en el eje vertical es una estimación de la media de la población $\mu$ y la pendiente es una estimación de la desviación estándar $\sigma$. 
+**Ejemplo**
+```{r}
+#repeticiones del experimento
+rep = 100
+#tamano de la muestra
+n = 16
+#media de la población
+mu = 800
+#desviacion estandar de la población 
+sigma = 40
+#matriz para guardar las muestras
+muestras = matrix(data = NA, nrow = rep, ncol = n)
+#Generacion de las muestras de tamaño n provenientes de una población
+#Normal con media mu y desviación sigma
+for (i in 1:rep) {
+  muestras[i,] = rnorm(n, mean=mu, sd=sigma) 
+}
+#Convertir la matriz muestras en un data.frame
+muestras = data.frame(muestras)
+head(muestras)
+```
+```{r}
+qqnorm(muestras$X1, pch = 1, frame = FALSE)
+qqline(muestras$X1, col = "steelblue", lwd = 2)
+```
+
+### Graficación de la probabilidad normal.. 
+
+```{r}
+Estación_1 <-c(5.30, 4.980, 13.700, 11.910, 10.730, 8.130, 11.400, 26.850, 860, 17.660, 2.200, 22.800, 4.250, 1.130, 15.040, 1.690)
+
+Estación_2 <-c(2.800, 4.670, 6.890, 7.720, 7.030, 7.330, 2.810, 1.330, 3.320, 1.230, 2.130, 2.190, NA, NA, NA, NA)
+```
+
+
+```{r}
+Número_de_organismos_m2 <-data.frame(Estación_1, Estación_2)
+Número_de_organismos_m2
+```
+
 ## Distribuciones muestrales de medias
+
+El campo de la inferencia estadística se trata básicamente con generalizaciónes y predicciones.
+
+### Inferencias sobre la población a patir de la información de la muestra. 
+
+**Definición** La distribuciòn de probabilidad de in estadìstico se llama **distribuciòn muestral.**
+
+## Distribuciones muestrales de medias
+
+
+**Teorema del lìmite central: ** si $\bar{X}$ es la media de de una muestra aleatoria de tamaño $n$ tomada de una población con media $\mu$ y varianza finita $\sigma^{2}$, entonces la forma límite de la distribución de $$Z = \frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt{n}}}$$
+conforme $n \rightarrow \infty$, es la distribución normal estándar $n(z;0,1)$
+
+
+**Ejemplo** Una empresa de material eléctrico fabrica bombillas de luz que tienen una duración que se distribuye aproximadamente en forma normal, con media de 800 horas y desviación estándar de 40 horas. Encuentre la probabilidad  de que una muestra aleatoria de 16 bombillas tengan una vida promedio de menos de 775 horas. 
+
+```{r}
+#repeticiones del experimento
+rep = 10000
+#tamano de la muestra
+n = 16
+#media de la población de bombillos
+mu = 800
+#desviacion estandar de la población de bombillos
+sigma = 40
+#matriz para guardar las muestras
+muestras = matrix(data = NA, nrow = rep, ncol = n)
+#Generacion de las muestras de tamaño n provenientes de una población
+#Normal con media mu y desviación sigma
+for (i in 1:rep) {
+  muestras[i,] = rnorm(n, mean=mu, sd=sigma) 
+}
+#Convertir la matriz muestras en un data.frame
+muestras = data.frame(muestras)
+#Crear una variable columna al final del data.frame con la proporcion de exitos
+#llamada Media
+head(muestras)
+```
+
+
+```{r}
+muestras$Media = apply(muestras, 1, mean)
+#Histograma de frecuencias para la variable aleatorio o estimador Media
+hist(muestras$Media, breaks=50)
+#Media del estimador Media
+mean(muestras$Media)
+#Varianza del estimador Media
+var(muestras$Media)
+#Desviacion estandar del estimador Media
+sd(muestras$Media)
+
+#Histograma con frecuencias relativas
+hist(muestras$Media, breaks=50, freq = FALSE)
+#Curva normal teorica superpuesta
+curve(dnorm(x, mean=mu, sd=sigma/sqrt(n)), col="red", lwd=2, add=TRUE, yaxt="n")
+
+# Encuentre la probabilidad de que una muestra aleatoria 
+# de 16 bombillas tenga una vida promedio de menos de 
+# 775 horas.
+```
+
+```{r}
+#Indicadora de que Medias son menores que 775
+muestras$ind = (muestras$Media < 775)
+#Conteo del numero de Medias menores a 775
+sum(muestras$ind)
+#Proporcion del numero de Medias menores a 775
+sum(muestras$ind)/rep
+```
+
+## Inferencias sobre la media de la población
+
+**Ejemplo:** Un importante proceso de fabricación produce partes de componentes cilíndricos para la industria automotriz. Es importante que el proceso produzca partes que tengan una media de 5 milímetros. El ingeniero implicado hace la conjetura de que la media de la población es de 5.0 milímetros. Se lleva a cabo un experimento donde se seleccionan al azar 100 partes elaboradas por el proceso y se mide el diámetro de cada una de ellas. Se sabe que la desviación estándar de la población es $\sigma=0.1$. El experimento indica un diámetro promedio de la muestra $\bar{x}=5.027$ milímetros. ¿Esta información de la muestra parece apoyar o refutar la conjetura del ingeniero?
+
+```{r}
+#repeticiones del experimento
+rep_2 = 10000
+#tamano de la muestra
+n_2 = 100
+#media del diametro de las piezas
+mu_2 = 5
+#desviacion estandar del diametro de las piezas
+sigma_2 = 0.1
+#matriz para guardar las muestras
+muestras_2 = matrix(data = NA, nrow = rep_2, ncol = n_2)
+#Generacion de las muestras de tamaño n provenientes de una población
+#Normal con media mu y desviación sigma
+for (i in 1:rep) {
+  muestras_2[i,] = rnorm(n_2, mean=mu_2, sd=sigma_2) 
+}
+#Convertir la matriz muestras en un data.frame
+muestras_2 = data.frame(muestras_2)
+head(muestras_2)
+
+
+```
+
+
+```{r}
+#Crear una variable columna al final del data.frame con la proporcion de exitos
+#llamada Media
+muestras_2$Media = apply(muestras_2, 1, mean)
+#Histograma de frecuencias para la variable aleatorio o estimador Media
+hist(muestras_2$Media, breaks=50)
+#Media del estimador Media
+mean(muestras_2$Media)
+#Varianza del estimador Media
+var(muestras_2$Media)
+#Desviacion estandar del estimador Media
+sd(muestras_2$Media)
+
+#Histograma con frecuencias relativas
+hist(muestras_2$Media, breaks=50, freq = FALSE)
+#Curva normal teorica superpuesta
+curve(dnorm(x, mean=mu_2, sd=sigma_2/sqrt(n_2)), col="red", lwd=2, add=TRUE, yaxt="n")
+
+# El ingeniero implicado hace la conjetura de que la media 
+#de la población es de 5.0 milímetros. 
+# Se lleva a cabo un experimento donde se seleccionan al 
+#azar 100 partes elaboradas por el proceso y se mide el 
+# diámetro de cada una de ellas.
+# El experimento indica un diámetro promedio de la muestra
+# x_barra = 5.027 milímetros. ¿Esta información de la 
+#muestra parece apoyar o refutar la conjetura del ingeniero?
+
+#Indicadora de que Medias mayores que 5.027
+muestras_2$ind = (muestras_2$Media > 5.027)
+#Conteo del numero de Medias mayores a 5.027
+sum(muestras_2$ind)
+#Proporcion del numero de Medias mayores a 5.027
+2*sum(muestras_2$ind)/rep
+```
+### Distribución muestral de la diferencia entre dos promedios. 
+
+**Teorema:** Si se extraen al azar muestras independientes de tamaños $n_1$ y $n_2$ de dos poblaciones, discretas o continuas, con medias $\mu_1$ y $\mu_2$ y varianzas $\sigma_{1}^{2}$ y $\sigma_{2}^{2}$ respectivamente, entonces la distribución muestras de las medias, $\bar{X_{1}}-\bar{X}_{2}$, está distribuida aproximadamente de forma normal con media y varianza dadas por $$\mu_{\bar{X_1}-\bar{X_2}}=\mu_{1}-\mu_{2}$$ y $$\sigma_{\bar{X_1}-\bar{X_2}}^{2}=\frac{\sigma_{1}^{2}}{n_1}+\frac{\sigma_{2}^{2}}{n_2}$$ De aquí,
+$$Z=\frac{(\bar{X_1}-\bar{X_2})-(\mu_1-\mu_2)}{\sqrt{(\sigma_{1}^{2}/n_1)+(\sigma_{2}^{2}/n_2)}}$$
+Es aproximadamente una variable normal estándar. 
+
+**Ejemplo:** Se llevan a cabo dos experimentos independientes en los que se comparan dos tipos diferentes de pintura. Se pintan 18 especímenes con el tipo A y en cada uno se registra el tiempo de secado en horas. Lo mismo se hace con el tipo B. Se sabe que las desviaciones estándar de la población son ambas $1.0$. 
+Suponiendo que el tiempo medio de secado es igual para los dos tipos de pintura, encuentre $P(\bar{X_A}-\bar{X_b}>1.0)$, donde $\bar{X_A}$ y $X_{X_B}$, son los tiempos promedio de secado para muestras de tamaño $n_A=n_B=18$
+
+```{r}
+#repeticiones del experimento
+rep = 10000
+#tamano de la muestra
+n_1 = 30
+n_2 = 30
+#media del diametro de las piezas
+mu_1 = 5
+mu_2 = 5
+#desviacion estandar del diametro de las piezas
+sigma_1 = 0.1
+sigma_2 = 0.1
+#matriz para guardar las muestras
+muestras_1 = matrix(data = NA, nrow = rep, ncol = n_1)
+muestras_2 = matrix(data = NA, nrow = rep, ncol = n_2)
+#Generacion de las muestras de tamaño n provenientes de una población
+#Normal con media mu y desviación sigma
+for (i in 1:rep) {
+  muestras_1[i,] = rnorm(n_1, mean=mu_1, sd=sigma_1) 
+}
+
+for (i in 1:rep) {
+  muestras_2[i,] = rnorm(n_2, mean=mu_2, sd=sigma_2) 
+}
+#Convertir la matriz muestras en un data.frame
+muestras_1 = data.frame(muestras_1)
+muestras_2 = data.frame(muestras_2)
+
+muestras_1$Media = apply(muestras_1, 1, mean)
+muestras_2$Media = apply(muestras_2, 1, mean)
+
+
+head(muestras_1)
+head(muestras_2)
+
+```
+
+
+
+
+```{r}
+muestras_df = muestras_1-muestras_2
+muestras_df
+```
+```{r}
+
+
+#Histograma de frecuencias para la variable aleatorio o estimador Media
+hist(muestras_df$Media, breaks=50)
+#Media del estimador Media
+mean(muestras_df$Media)
+#Varianza del estimador Media
+var(muestras_df$Media)
+#Desviacion estandar del estimador Media
+sd(muestras_df$Media)
+
+```
+```{r}
+#Histograma con frecuencias relativas
+hist(muestras_2$Media, breaks=50, freq = FALSE)
+#Curva normal teorica superpuesta
+curve(dnorm(x, mean=mu_2, sd=sigma_2/sqrt(n_2)), col="red", lwd=2, add=TRUE, yaxt="n")
+
+# El ingeniero implicado hace la conjetura de que la media 
+#de la población es de 5.0 milímetros. 
+# Se lleva a cabo un experimento donde se seleccionan al 
+#azar 100 partes elaboradas por el proceso y se mide el 
+# diámetro de cada una de ellas.
+# El experimento indica un diámetro promedio de la muestra
+# x_barra = 5.027 milímetros. ¿Esta información de la 
+#muestra parece apoyar o refutar la conjetura del ingeniero?
+
+#Indicadora de que Medias mayores que 5.027
+muestras_2$ind = (muestras_2$Media > 5.027)
+#Conteo del numero de Medias mayores a 5.027
+sum(muestras_2$ind)
+#Proporcion del numero de Medias mayores a 5.027
+2*sum(muestras_2$ind)/rep
+```
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
