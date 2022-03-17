@@ -56,16 +56,19 @@ Encontremos la media de la población de los estados.
 
 
 ```{r}
+#mean es la función de r para encontrar el promedio o media. 
 mean(state[['Population']])
 ```
 
 
 ```{r}
+#Si deseamos encontrar la media truncada utilizamos el argumento trim
 mean(state[['Population']], trim=0.1)
 ```
 Este trim=0.1 elimina o deja de considerar el 10% de los datos en cada extremo
 
 ```{r}
+#weighted.mean es la función de r para las medias ponderadas. 
 weighted.mean(state[['Murder.Rate']], w=state[['Population']])
 ```
 
@@ -76,16 +79,20 @@ La varianza debería indicar como se dispersan las observaciones a partir del pr
 Considere las siguientes mediciones, en litros, para dos muestras de jugo de naranaja envasado por las compañias A y B
 
 ```{r}
+#Creación de vectores con la información de cada muestra. 
 Muestra_A <-c(0.97, 1.00, 0.94, 1.03, 1.06)
 Muestra_B <-c(1.06, 1.01, 0.88, 0.91, 1.14)
 
+#Creación de un dataframe. 
 df<-data.frame(Muestra_A,Muestra_B)
 df
 ```
 Ahora, encontremos la media de cada una de las muestras.
 ```{r}
+#Utilizamos la función cat para imprimir un mensaje frete a un resultado. 
 cat("Media de la Muestra A: ", mean(Muestra_A))
 ```
+
 ```{r}
 cat("Media de la Muestra B: ", mean(Muestra_B))
 ```
@@ -97,6 +104,7 @@ $$ S^{2} = \frac{1}{n-1}\sum_{i=1}^{n}\left(X_{i}-\bar{X}\right)^{2}$$
 El valor calculado de $S^{2}$ para una muestra dada se denota con $s^2$.
 
 ```{r}
+#Utilizamos la función sd para encontrar la desviación standar de la muestra. 
 cat("Varianza de la Muestra A", (sd(Muestra_A))^2)
 ```
 
@@ -117,8 +125,14 @@ Aumento_cafe_df
 ```
 Podemos utilizar la función sd(), que corresponde a la desviación estandar, y por definición el cuadrado de esta será el valor de la varianza. 
 ```{r}
+#Podemos utilizar la función sd para encontrar la varianza elevando esta al cuadrado. 
 (sd(Aumento_cafe))^2
 ```
+```{r}
+#Utilizamos var para encontrar la varianza de una muestra. 
+var(Aumento_cafe)
+```
+
 Existe una expresión alternativa para la varianza y que es un teorema:
 **Teorema:** Si $S^{2}$ es la varianza de una muestra aleatoria de tamaño $n$, podemos escribir:
 $$S^{2}=\frac{1}{n(n-1)}\left[n\sum_{i=1}^{n}X_{i}^{2}- \left(\sum_{i=1}^{n}X_{i}\right)^{2}\right]$$
@@ -157,7 +171,9 @@ nicotina <-c(1.09, 0.85, 1.86, 1.82, 1.40, 1.92, 1.24, 1.90, 1.79, 1.64, 2.31, 1
 nicotina_df<-c(nicotina)
 nicotina
 ```
+
 ```{r}
+#boxplot es la función para crear graficos de cajas y bigotes. 
 boxplot(nicotina_df)
 ```
 
@@ -451,20 +467,188 @@ sum(muestras_2$ind)
 #Proporcion del numero de Medias mayores a 5.027
 2*sum(muestras_2$ind)/rep
 ```
+
+
+
+
+
+
+
+
+## Distribución muestral de $S^2$
+
+**Teorema**  si $S^2$ es la varianza de una muestra aleatoria de tamaño $n$ que se toma de una población normal que tiene la varianza $\sigma^{2}$, entonces el estadistico $$X^{2} =\frac{(n-1)S^{2}}{\sigma^{2}}=\sum_{i=1}^{n}\frac{(X_{i}-\bar{X})^2}{\sigma^2}$$
+tiene una distribución chi cuadrara con $v=n-1$ grados de libertad
+
+
+**Ejemplo**Un fabricante de baterías para automóvil garantiza que sus baterías durarán, en promedio, 3 años con una desviación estándar de 1 año. Si cinco de estas baterías tienen duraciones de 1.9, 2.4, 3.0, 3.5 y 4.2 años,¿el fabricante aún está convencido de que sus baterías tienen una desviación estándar de 1 año? Suponga que la duración de la batería sigue una distribución normal.
+
+
+```{r}
+
+#repeticiones del experimento
+rep = 10000
+#tamano de la muestra
+n = 5
+#media del diametro de las piezas
+mu = 3
+#desviacion estandar del diametro de las piezas
+sigma = 1
+#matriz para guardar las muestras
+muestras = matrix(data = NA, nrow = rep, ncol = n)
+#Generacion de las muestras de tamaño n provenientes de una población
+#Normal con media mu y desviación sigma
+for (i in 1:rep) {
+  muestras[i,] = rnorm(n, mean=mu, sd=sigma) 
+}
+#Convertir la matriz muestras en un data.frame
+muestras = data.frame(muestras)
+#Crear una variable columna al final del data.frame con la proporcion de exitos
+#llamada Media
+muestras$S_2 = apply(muestras, 1, var)
+#Crear una variable transformando S_2 que se llame Chi_Sq
+muestras$Chi_Sq = (n-1)*muestras$S_2/sigma^2
+#Histograma de frecuencias para la variable aleatoria o estimador Varianza
+hist(muestras$S_2, breaks=50)
+#Media del estimador Varianza
+mean(muestras$S_2)
+#Varianza del estimador Varianza
+var(muestras$S_2)
+#Histograma de frecuencias para la variable aleatorio o estimador Chi_Sq
+hist(muestras$Chi_Sq, breaks=50)
+#Media del estimador Chi_Sq
+mean(muestras$Chi_Sq)
+#Varianza del estimador Chi_Sq
+var(muestras$Chi_Sq)
+
+#Histograma con frecuencias relativas
+hist(muestras$Chi_Sq, breaks=50, freq = FALSE)
+#Curva Chi-cuadrado teorica superpuesta
+curve(dchisq(x, df=4), col="red", lwd=2, add=TRUE, yaxt="n")
+
+## -- Solución del ejercicio
+
+#Creacion del vector de datos
+datos = c(1.9, 2.4, 3.0, 3.5, 4.2)
+#Calculo de su varianza
+s2 = var(datos)
+#Transformacion Chi-cuadrado
+chis_quad = (n-1)*s2/sigma^2
+
+#Que porcentaje de repeticiones del experimento son menores que 
+#el valor de chis_quad
+sum(muestras$Chi_Sq<chis_quad) 
+#Que porcentaje de repeticiones del experimento son mayores que 
+#el valor de chis_quad
+sum(muestras$Chi_Sq>chis_quad)
+
+#Podríamos preguntarnos entre que par de valores "centrales"
+#se concentra el 95% de los valores de la variable Chi_Sq
+quantile(muestras$Chi_Sq,c(0.025,0.975))
+
+#Como el valor de chis_quad es un valor que cae entre estos
+#dos valores, el valor de la muestra tiene alta probbilidad
+#que ocurra
+```
+
+## Distribución t
+**Teorema** Sea $Z$ una variable aleatoria normal estándar y $V$ una variable aleatoria chi cuadrada con $v$ grados de libertad. Si $Z$ y $V$ son independientes, entonces, la distribución de la variable aleatoria $T$, donde
+$$T = \frac{Z}{\sqrt{V/v}}$$
+está dada por la función de densidad
+$$h(t)=\frac{\Gamma[(v+1)/2]}{\Gamma(v/2)\sqrt{\pi v}}\left(1+\frac{t^2}{v}\right)^{-(v+1)/2}$$
+**Ejemplo** El valor $t$ con $v=14$ grados de libertad que deja un área de $0.025$ a la izquierda y, por lo tanto. un área de $0.975$ a la derecha
+
+```{r}
+-qt(0.025,14)
+```
+```{r}
+qt(0.975, 14)
+```
+
+**Ejemplo**
+Encuentre $P\letf(-t_{0.025}< T < t_{0.05}\right)
+
+```{r}
+qt(0.05,df=1)
+```
+
+
+Ésta se conoce como la distribución t con $v$ grados de libertad.
+**Ejemplo** Un ingeniero químico afirma que el rendimiento medio de la población de cierto proceso de lotes es de 500 gramos por milímetro de materia prima. Para verificar dicha afirmación muestrea 25 lotes cada mes. Si el valor $t$ calculado cae entre $-t_{0.05}$ y $t_{0.05}$, queda satisfecho con su afirmación. ¿Qué conclusión debería obtener de una muestra que tiene media $\bar{x}=518$ gramos por milímetro y una desviación  estándar muestra de $s=40$? Suponga que la distribución de rendimientos es aproximadamente normal. 
+
+```{r}
+n <- 25
+df <- n - 1
+samples <- rt(n, df)
+hist(samples, breaks = 'Scott', freq = FALSE)
+samples
+```
+```{r}
+x <- seq(-2, 4, by = 1)
+dt(x, df = n-1)
+```
+
+```{r}
+pt(-0.05, df) + pt(0.05, df,lower.tail = FALSE)
+```
+
+```{r}
+qt(0.05,df)
+```
+```{r}
+qt(1-0.05,df)
+```
+```{r}
+pt(2.25,24, lower.tail = FALSE)
 ```
 
 
 
+```{r}
+x<-seq(-4,4, by=1)
+dt(x, df=25)
+```
+
+
+## Distribución F
 
 
 
+Suponga que las muestras aleatorias de tamaño $n_1$ y $n_2$ se seleccionan de dos poblaciones normales con varianzas $\sigma_{1}^{2}$ y $\sigma_{2}^{2}$ respectivamente. Sabemos que 
+
+$$X_{1}^{2} = \frac{(n_1-1)S_{1}^{2}}{\sigma_{1}^{2}} \hspace{1cm}X_{1}^{2} = \frac{(n_2-1)S_{2}^{2}}{\sigma_{2}^{2}}$$
+son variables aleatorias que tienen distribuciones chi cuadradas con $v_1=n_1 -1$ y $v_2 = n_2-1$ grados de libertad. Además, como las muestras se seleccionan al azar, la tratamos con variables aleatorias independientes y, entonces, usando el teorema anterior
+
+**Teorema** Si $S_{1}^{2}$ y $S_{1}^{2}$ son las varianzas muestras aleatorias independientes de tamaño $n_1$ y $n_2$ tomadas de poblaciones normales con varianzas $\sigma_{1}^{2}$ $\sigma_{2}^{2}$, respectivamente, entonces, 
+$$F=\frac{S_{1}^{2}/\sigma_{1}^{2}}{S_{2}^{2}/\sigma_{2}^{2}}= \frac{\sigma_{2}^{2}S_{1}^{2}}{\sigma_{1}^{2}S_{2}^{2}} $$
 
 
 
+### ¿Para qué se utiliza la distribución F?
 
+La distribución $F$ se usa en situaciones de dos muesrtas para realizar inferencias acerca de las varianzas de población. La distribución $F$ se aplica a muchos otros tipos de problemas en los cuales están relacionadas las varianzas muestrales. De hecho la distribución $F$ se llama *distribución de razón de varianzas*
 
+```{r}
+pintura <-c('A', 'B', 'C')
+media_muestral <-c(4.5, 5.5, 6.5)
+varianza_muestral <-c(0.20, 0.14, 0.11)
+tamaño_muestral <- c(10, 10, 10)
+tiempo_secado <-data.frame(pintura, media_muestral, varianza_muestral, tamaño_muestral)
+tiempo_secado
+```
+El problema se centra alrededor de si los promedios muestrales están los suficientemente alejados o no. La implicación "suficientemente alejados" resulta muy importante. Parecería razonable que si la variabilidad entre los promdios muestrales es mayor que lo que se esperaría por casualidad, los datos no apoyan la conclusión de $\mu_A=\mu_B=\mu_C$. 
 
+```{r}
+curve(df(x, df1 = 10, df2 = 20), from = 0, to = 4)
+```
 
+```{r}
+df(1.2, df1=10, df2=20)
+```
+
+```{r}
+
+```
 
 
 
