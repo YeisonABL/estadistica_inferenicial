@@ -646,9 +646,956 @@ curve(df(x, df1 = 10, df2 = 20), from = 0, to = 4)
 df(1.2, df1=10, df2=20)
 ```
 
+# Pruebas de estimación de una y dos muestras
+
+## Introducción
+
+## Inferencia estadística
+## Métodos clásicos de estimación
+
+
+### Estimador insesgado
+ 
+**Definición** Se dice que un estadístico $\hat{\Theta}$ es un estimador insesgado del parámetro $\theta$ si $$\mu_{\hat{\Theta}}=E(\hat{\Theta})=\theta$$
+
+## Una sola muestra: Estimación de la media
+#### Intervalo de confianza de $\mu$; con $\sigma$ conocida. 
+Si $\bar{x}$ es la media de una muestra aletoria de tamaño $n$ de una población con varianza $\sigma^{2}$ conocida, un intervalo de confianza $(1-\alpha)100%$ para $\mu$ está dado por
+$$\bar{x}-z_{\alpha/2}\frac{\sigma}{\sqrt{n}}<\mu<\bar{x}+z_{\alpha/2}\frac{\sigma}{\sqrt{n}}$$
+**Ejemplo** Se encuentra que la concentración promedio de zine que se obtiene a partir de una muestra de mediciones de zinc en $36$ sitios diferentes es $2.6$ gramos por mililitro. Encuentre los intervalos de confianza de 95 y 99% para la concentración media de zinc en el rio. Suponga que la desviación estándar de la población es 0.3.
+
+Utilizaremos la función 't.test' la cual usamos para calcular intervalos de confianza para la media y diferencia de medias, con muestras independientes y dependientes (o pareadas)
+
+```{r}
+# Un vector de 36 muestras con media 2.6 y desviación estandar 0.3
+
+x<-rnorm(36, mean=2.6,sd=0.3)
+t.test(x, alternative = "two.sided", conf.level = 0.99)
+```
+```{r}
+x<-rnorm(36, mean=2.6,sd=0.3)
+t.test(x, alternative = "two.sided", conf.level = 0.95)
+```
+**Teorema** Si se utiliza $\bar{x}$ como una estimación de $\mu$, podemos tener una confianza de $(1-\alpha)100%$ de que el error no excederá $z_{\alpha/2}\frac{\sigma}{\sqrt{n}}$
+
+**Teorema** Si \bar{x} se usa como estimación de $\mu$, podemos tener $(1-\alpha)100%$ de confianza de que el error no excederá una cantidad específica $e$ cuando el tamaño de la muestra sea $$n = \left(\frac{z_{\alpha/2}\sigma}{e}\right)^2$$
+**Ejemplo** ¿Qué tan grande se requiere una muestra en el ejemplo anterior si queremos tener 95% de confianza de que nuestra estimación de $\mu$ difiera por menos de 0.05?
+
+
+```{r}
+z_alpha=qnorm(0.025, lower.tail = FALSE)
+z_alpha
+```
+```{r}
+sigma=0.3
+e = 0.05
+n = ((z_alpha*sigma)/e)**2
+n
+```
+
+```{r}
+x<-rnorm(ceiling(n),mean=2.6,sd=0.3)
+t.test(x, alternative = "two.sided", conf.level = 0.95)
+```
+```{r}
+abs(2.542800-2.6)
+```
+```{r}
+abs(2.640213-2.6)
+```
+### Limites de confianza unilaterales. 
+#### Límites de confianza unilaterales en $\mu$; $\sigma$ desconocida
+Si $\bar{X}$ es la media de una muestra aleatoria de tamaño $n$ a partir de una población con varianza $\sigma^2$, los límites de confianza unilaterales de $(1-\alpha)100%$ para $\mu% estan dados por
+ - Límite unilateral superior: $\bar{x}+z_{\alpha} \sigma/\sqrt{n}$
+ - Límite unilateral inferior: $\bar{x}-z_{\alpha}\sigma/\sqrt{n}$
+
+**Ejemplo** En un estudio de pruebas psicológicas, se seleccionan al azar 25 sujetos y se mide su tiempo de reacción, en segundos, ante un experimento particular. La experiencia pasada sugiere que la varianza en el tiempo de reacción es aproximadamente normal. El tiempo promedio para los sujetos fue de 6.2 segundos. Dé un límite superior de 95% para el tiempo medio de reacción. 
+
+```{r}
+set.seed(002)
+x<-rnorm(25, mean=6.2,sd=2)
+t.test(x,alternative = "greater",conf.level = 0.95)
+```
+### Caso de $\sigma$ desconocida
+
+#### Intervaloo de confianza de $\mu$; con $\sigma$ desconocida
+
+Si $\bar{x}$ y $s$ son la media y la desviación estándar de una muestra aleatoria de una población con varianza $\sigma^2$ desconocida, un intervalo de confianza de $(1-\alpha)100%$
+
+$$\bar{x}-t_{\alpha/2}\frac{s}{\sqrt{n}}<\mu<\bar{x}+t_{\alpha/2}\frac{s}{\sqrt{n}}$$
+donde $t_{\alpha/2}$ es el valor $t$ con $v=n-1$ grados de libertad que deja un área de $\alpha/2$ a la derecha
+
+
+**Ejemplo** El contenido de 7 contenedores similares de ácido sulfúrico es de 9.8, 10.2, 10.4, 9.8, 10.0, 10.2 y 9.6 ligrots. Encuentre un intervalor de confianza de 95% para la media de todos los contenedores, si se supone una distribución aproximadamente normal. 
+
+```{r}
+acido<-c(9.8, 10.2, 10.4, 9.8, 10.0, 10.2, 9.6)
+mean(acido)
+```
+```{r}
+length(acido)
+```
+```{r}
+t.test(acido, mean=mean(acidos), sd=sd(acidos), df=length(acido)-1)
+```
+
+
+## Error estándar de una estimación puntual
+
+
+
+
+
+## Intervalos de predicción
+
+#### Intervalo de predicción para una observación futura: $\sigma$ conocida
+
+Para una distribución normal de mediciones con media desconocida $\mu$ y varianza conocida $\sima^2$, un intervalo de predicción de $(1-\alpha)100%$ de una observación futura $x_{0}$ es
+$$\bar{x}-z_{\alpha/2}\sigma\sqrt{1+1/n}<x_{0}<\bar{x}+z_{\alpha/2}\sigma\sqrt{1+1/n}$$
+donde $z_{\alpha/2}$ es el valor de $z$ que deja un área de $\alpha/2$ a la derecha. 
+
+**Ejemplo** A causa de la disminución en las tasas de interés, el First Citizens Bank recibió muchas solicitudes para hipoteca. Una muestra reciente de 50 créditos hipotecarios resultó en un promedio de $ \$257,300$. Suponga una desviación estándar de la población de $\$25000$. Si el siguiente cliente llamó para una solicitud de crédito hipotecario, encuentre un intervalo de confianza de predicción de 95% para la cantidad del crédito de este cliente. 
+
+```{r}
+n = 50
+x_bar = 257300
+sigma = 25000
+z_alpha2 = qnorm(0.05/2, lower.tail = FALSE)
+raiz = sqrt(1+(1/n))
+```
+
+```{r}
+x_bar-z_alpha2*sigma*raiz
+```
+```{r}
+x_bar+z_alpha2*sigma*raiz
+```
+Es un intervalo de $(\$207812.43,\$306787.57)$
+
+Tambien podemos crear una función para realizar todas estas operaciones. 
+```{r}
+x<-rnorm(50,mean=257300,sd=25000)
+
+interpredict<- function(n, x_bar, sigma, alpha){
+  raiz = sqrt(1+(1/n))
+  z_alpha2 = qnorm(alpha/2, lower.tail = FALSE)
+  a=x_bar-z_alpha2*sigma*raiz
+  b=x_bar+z_alpha2*sigma*raiz
+  print(a)
+  print(b)
+}
+```
+
+```{r}
+interpredict(n=50, x_bar=257300, sigma=25000, alpha=0.05)
+```
+#### Intervalo de predicción de una observación futura
+Para una distribución normal de mediciones con media desconocida $\mu$ y varianza desconocida $\sigma^{2}$, un **intervalo de predicción** de $(1-\alpha)100%$ de una observación futura $x_{0}$ es 
+$$\bar{x}-t_{\alpha/2}s\sqrt{1+1/n}<x_{0}<\bar{x}+t_{\alpha/2}s\sqrt{1+1/n}$$
+donde $t_{\alpha/2}$ es el valor $t$ con $v=n-1$ grados de libertad, que deja un área de $\alpha/2$ a la derecha 
+
+**Ejemplo** Un inspector de alimentos midió aleatoriamente 30 paquetes de carne de res 95% sin grada. La muestra resultó en una media de 96.2% con la desviación estándar muestral de 0.08%. Encuentre un intervalo  de predicción de 99% para un paquete nuevo. Suponga normalidad. 
+
+```{r}
+qt(0.005,df=29, lower.tail = FALSE)
+```
+```{r}
+tinterpredict<- function(n, x_bar, sigma, alpha){
+  raiz = sqrt(1+(1/n))
+  t_alpha2 = qt(0.005,df=29, lower.tail = FALSE)
+  a=x_bar-t_alpha2*sigma*raiz
+  b=x_bar+t_alpha2*sigma*raiz
+  print(a)
+  print(b)
+}
+```
+
+```{r}
+n=30
+x_bar=96.2
+sigma=0.8
+alpha=1-0.99
+tinterpredict(n=n ,x_bar=x_bar, sigma=sigma, alpha=alpha)
+```
+Por lo tanto un intervalo de predicción de 99% para una observación nueva $x_{0}$ es $(93.95844,98.44156)$
+
+
+## Límites de tolerancia
+
+#### Límites de tolerancia 
+Para una distribución normal de mediciones con media $\mu$ y desviación estándar $\sigma$, ambas desconocidas, los **límites de tolerancia** están dados por $\bar{x}\pm ks$, donde $k$ se determina de manera que se pueda asegurar con una confianza de $(1-\gamma)100%$ que los límites dados contienen la menos la proporción $1-\alpha$ de las mediciones. 
+
+**Ejemplo** una máquina produce piezas de metal que tienen forma cilíndrica. Se toma una muestra de tales piezas y se encuentra que los diámetros son 1.01, 0.97, 1.03, 1.04, 0.99, 0.98, 0.99, 1.01 y 1.03 centímetros. Encuentre los límites de tolerancia de 99% que contendrán 95% de las piezas de metal que produce la máquina. Suponga distribución aproximadamente normal. 
+
+```{r}
+diametros <-c(1.01, 0.97, 1.03, 1.04, 0.99, 0.98, 0.99, 1.01, 1.03)
+mean(diametros)
+sd(diametros)
+```
+Utilizamos la libreria 'tolerance' y la función 'normtol.int'
+
+```{r}
+library(tolerance)
+normtol.int(diametros, alpha=0.05, P=0.99, side=2)
+```
+
+
+## Dos muestras: Estimación de la diferencia entre dos medias
+
+#### Intervalo de confianza para $\mu_{1}-\mu_{2}$; con $\sigma_{1}^{2}$ y $\sigma_{2}^{2}$ conocidas
+Si $\bar{x}_{1}$ y $\bar{x}_2$ son las medias de muestras aleatorias independientes de tamaños $n_1$ y $n_2$ de poblaciones con varianzas conocidas $\sigma_{1}^{2}$ y $\sigma_{2}^{2}$, respectivamente, un intervalo de confianza de $(1-\alpha)100%$ para $\mu_{1}-\mu_{2}$ está dado por.   
+
+$$(\bar{x}_{1}-\bar{x}_{2})-z_{\alpha/2}\sqrt{\frac{\sigma_{1}^{2}}{n_1}+\frac{\sigma_{2}^{2}}{n_2}}<\mu_{1}-\mu_2<(\bar{x}_{1}-\bar{x}_{2})+z_{\alpha/2}\sqrt{\frac{\sigma_{1}^{2}}{n_1}+\frac{\sigma_{2}^{2}}{n_2}}$$
+donde $z_{\alpha/2}$ es el valor de $z$ que deja un área de $\alpha/2$ a la derecha
+
+**Ejemplo** Se lleva a cabo un experimento donde se comparan dos tipos de motores, A y B. Se mide el rendimiento de combustible en millas por galón. Se realizan 50 experimentos con el motor tipo A y 75 con el motor tipo B. La gasolina que se utiliza y las demás condiciones se mantienen constantes. El rendimiento promedio de gasolina para el motor A es de 36 millas por galón, y el promedio para el motor B es de 42 millas por galón. Encuentre un intervalod de confianza de 96% sobre $\mu_B - \mu_A$, donde $\mu_A$ y $\mu_B$ son el rendimiento de combustible medio poblacional para los motores A y B, respectivamente. Suponga que las desviaciones estándar poblacionales son 6 y 8 para los motores A y B, respectivamente. 
+
+```{r}
+A<-rnorm(50,mean=36, sd=6)
+B<-rnorm(75,mean=42, sd=8)
+
+t.test(B,A,conf.level = 0.96)
+```
+```{r}
+qnorm(0.04/2,lower.tail = FALSE)
+```
+
+```{r}
+intermean<-function(x,n1,y,n2,alpha,sigma1,sigma2){
+  a=mean(y)-mean(x)
+  b=qnorm(0.04/2,lower.tail = FALSE)
+  arg = (sigma1**2/n1)+(sigma2**2/n2)
+  sqrt =sqrt(arg)
+  i1=a-b*sqrt
+  i2=a+b*sqrt
+  print(i1)
+  print(i2)
+}
+```
+
+```{r}
+intermean(A,50,B, 75, 0.04, 6,8)
+```
+### Varianza desconocida
+
+#### Estimado de unión de la varianza
+
+$$S_{p}^{2} = \frac{(n_1 -1 )S_{1}^{2}+(n_2 - 1)S_{2}^{2}}{n_1 +n_2 -2}$$
+#### Intervalo de confianza para $\mu_1 - \mu_2$; con $\sigma_{1}^{2}=\sigma_{2}^{2}$ pero desconocidas. 
+Si $\bar{x}_1$ y $\bar{x}_2$ son  las medias de muestras aleatorias independientes con tamaños $n_1$ y $n_2$, respectivamente, de poblaciones aproximadamente normales con varianzas iguales pero desconocidas, un intervalo de confianza de $(1-\alpha)100%$ para $\mu_1 - \mu_2$ está dado por. 
+
+$$(\bar{x}_1 - \bar{x}_2)-t_{\alpha/2}s_{p}\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}<\mu_1 - \mu_2<\bar{x}_1 - \bar{x}_2)+t_{\alpha/2}s_{p}\sqrt{\frac{1}{n_1}+\frac{1}{n_2}}$$
+donde$s_p$ es la estimación de unión de la desviación estándar poblacional y $t_{\alpha/2}$ es el valor $t$ con $v=n_1 + n_2 -2$ grados de libertad, que deja un área de $\alpha/2$ a la derecha. 
+
+
+**Ejemplo** En el artículo "Macroinvertebrate Community Structure as an Indicator of Acid Mine Pollution", publicado en el *Journal of Environmental Pollution*, se ofrece un reporte sobre una investigación realizada en Cane Creek, Alabama, para determinar la relación entre parámetros fisioquímicos seleccionados y diversas mediciones de la estructura de la comunidad de macroinvertebrados. Una faceta de la investigación fue una evaluación de la efectividad de un índice númerico de la diversidad de especies, para indicar de la degradación del agua debida al desagüe ácido de una mina. Conceptualmente, un índice alto de la diversidad de especies macroinvertebradas debería indicar un sistema acuático no contaminado mientras que un índice de diversidad baja indicaría un sistema acuático contaminado. 
+
+Se eligieron 2 estaciones de muestreo independientes para dicho estudio: una que se localiza corriente abajo del punto de descarga ácida de la mina y otra ubicada corriente arriba. Para 12 muestras mensuales reunidas en la estación correinte abajo, el índice de diversidad de especies tuvo un valor medio de $\bar{x}=3.11$ y una desviación estándar $s_1 = 0.771$; mientras que 10 muestras reunidas mensualmente en la estación corriente arriba tuvieron un valor medio del índice $\bar{x}_2=2.04$ y una desviación estándar $s_2 =0.448$. Encuentre un intervalo de confianza del 90% para la diferencia entre las medias poblacionales para los dos sitios, suponiendo que las poblaciones están distribuidas de forma aproximadamente normal con varianzas iguales. 
+
+
+```{r}
+A<-rnorm(12, mean=3.11,sd=0.771)
+B<-rnorm(10, mean=2.04,sd=0.447)
+t.test(A,B,conf.level = 0.9, var.equal = TRUE)
+```
+```{r}
+interdifmeanvar<-function(x1,n1,s1,x2,n2,s2,alpha){
+  sp = ((n1-1)*(s1**2)+(n2-1)*(s2**2))/(n1+n2-2)
+  df=n1+n2-2
+  t_alpha=qt(alpha/2,df=df, lower.tail = FALSE)
+  a=x1-x2
+  sqrt=sqrt((1/n1)+(1/n2))
+  li = a-t_alpha*sp*sqrt
+  ls = a+t_alpha*sp*sqrt
+  print(li)
+  print(ls)
+}
+
+```
+
+```{r}
+interdifmeanvar(3.11,12,0.771,2.04,10,0.448,0.01)
+```
+### Varianzas distintas
+
+####Intervalo de confianza para $\mu_1 - \mu_2$; $\sigma_{1}^{2}\not= \sigma_{2}^{2}$
+Si $\bar{x}_1$ y $s_1^2$ y $\bar{x}_2$ y $s_2^2$ son las medias y varianzas de muestras aleatorias independientes de tamaños $n_1$ y $n_2$, respectivamente, de poblaciones aproximadamente normales con varianzas desconocidas y diferentes, un intervalo de confianza aproximado del $(1-\alpha)100 \% $ para $\mu_1 - \mu_2$ está dado por 
+$$(\bar{x}_1 - \bar{x}_2)-t_{\alpha/2}\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}<\mu_1 - \mu_2 <(\bar{x}_1 - \bar{x}_2)+t_{\alpha/2}\sqrt{\frac{s_1^2}{n_1}+\frac{s_2^2}{n_2}}$$
+donde $t_{\alpha/2}$ es el valor $t$ con 
+$$v=\frac{(s_1^2/n_1 + s_2^2/n_2)^2}{[(s_1^2/n_1)^2/(n_1 -1)]+[(s_2^2/n_2)^2(n_2 -1)]}$$
+grados de libertad, que deja un área $\alpha/2$ a la derecha.
+
+**Ejemplo** El Departamento de Zoología del Instituto Politécnico y Universidad Estatal de Virginia llevó a cabo un estudio para estimar la diferencia en la cantidad de ortofósfoto químico medido en dos estaciones diferentes del río James. El ortofósforo se mid een miligramos por litro. Se reunieron 15 muestras de la estación 1 y 12 muestras de la estación 2. Las 15 muestras de la estación 1 tuvieron un contenido promedio de ortofósforo de 3.84 miligramos por litro y una desviación estándar de 3.07 miligramos por litro; en tanto que las 12 muestas de la estación 2 tuvieron un contenido promedio de 1.49 miligramos por litro y una desviación estándar de 0.80 miligramos por litro. Encuentre un intervalo de confianza de 95% para la diferencia en el contenido promedio real del ortofósforo en estas dos estaciones. Suponga que las observaciones provienen de poblaciones normales con varianzas diferentes. 
+
+
+```{r}
+A<-rnorm(15, mean = 3.84, sd = 3.07)
+B<-rnorm(12, mean = 1.49, sd = 0.8)
+t.test(A,B, conf.level = 0.95, var.equal = FALSE,alternative = "two.sided")
+```
+
+
+
+
+
+## Observaciones pareadas
+
+
+#### Intervalo de confianza para $\mu_{D}=\mu_1 - \mu_2; para observaciones pareadas$ 
+
+Si $\bar{d}$ y $s_{d}$ son la media y la desviación estándar, respectivamente, de las diferencias distribuidas normalmente de $n$ pares aleatorios de mediciones, un intervalo de confianza de $(1-\alpha)100%$ para $\mu_{D}=\mu_{1}-\mu_{2}$ es
+$$\bar{d}-t_{\alpha/2}\frac{s_d}{\sqrt{n}}<\mu_D<\bar{d}+t_{\alpha/2}\frac{s_d}{\sqrt{n}}$$
+
+
+
+**Ejemplo** Un estudio publicado por *Chemosphere* reporta los niveles de la diocina TCDD de 20 veteranos de Vietnam residentes en MAssachusetts, quienes posiblemente se expusieron al agente naranja. La cantidad en los niveles de TCDD en el plasta y el tejido adiposo se presenta en la siguiente tabla: 
+
+```{r}
+Veterano <-c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20)
+Niveles_TCDD_en_plasma <-c(2.5, 3.1, 2.1, 3.5, 3.1, 1.8, 6.0, 3.0, 36.0, 4.7, 6.9, 3.3, 4.6, 1.6, 7.2, 1.8, 20.0, 2.0, 2.5, 4.1)
+Niveles_TCDD_en_tejido_adiposo <-c(4.9, 5.9, 4.4, 6.9, 7.0, 4.2, 10.0, 5.5, 41.0, 4.4, 7.0, 2.9, 4.6, 1.4, 7.7, 1.1, 11.0,2.5, 2.3, 2.5 )
+d_i<-Niveles_TCDD_en_plasma-Niveles_TCDD_en_tejido_adiposo
+
+df<-data.frame(Veterano, Niveles_TCDD_en_plasma, Niveles_TCDD_en_tejido_adiposo, d_i)
+df
+```
+```{r}
+d_mu = mean(df$d_i)
+d_mu
+```
+```{r}
+s_d = sd(df$d_i)
+s_d
+```
+```{r}
+t_alpha_2 = qt(1-0.025,df=19)
+t_alpha_2
+```
+```{r}
+d_mu-((t_alpha_2)*(s_d/sqrt(20)))
+```
+```{r}
+d_mu+(t_alpha_2)*(s_d/sqrt(20))
+```
+```{r}
+help("t.test")
+```
+
+```{r}
+boxplot(df$Niveles_TCDD_en_plasma,df$Niveles_TCDD_en_tejido_adiposo)
+```
+
+```{r}
+boxplot(df$Niveles_TCDD_en_plasma,df$Niveles_TCDD_en_tejido_adiposo)
+```
+
+```{r}
+t.test(df$Niveles_TCDD_en_plasma, df$Niveles_TCDD_en_tejido_adiposo, mu=0, alt= "two.sided",paired=T, conf.level=0.95)
+```
+
+
+## Una sola muestra: Estimación de una proporción
+
+#### Intervalo de confianza de $p$ de una muestra grande. 
+Si $\hat{p}$ es la proporción de éxitos en una muestra aleatoria de tamaño $n$, y $\hat{q}-\hat{p}$, un intervalo de confianza de confianza aproximado de $(1-\alpha)100%$ para el parámetro binomial $p$ esté dado por
+$$\hat{p}-z_{\alpha/2}\sqrt{\frac{\hat{p}\hat{q}}{n}}<p<\hat{p}+z_{\alpha/2}\sqrt{\frac{\hat{p}\hat{q}}{n}}$$
+donde $z_{\alpha/2}$ es el valor de $z$ que deja un área de $\alpha/2$ a la derecha. 
+
+
+**Ejemplo** Es una muestra aleatoria de $n=500$ familias que tienen televisores en la cidad de Hamilton, Canadá, se encuentran que $x=340$ estan suscritas a HBO. Encuentre un intervalo de confianza de 95% para la proporción real de familias en esta ciudad que están suscritas a HBO
+
+## Dos muestras: Estimación de la diferencia entre dos proporciones. 
+**Ejemplo** Se considera cierto cambio en un proceso de fabricación de partes componentes. Se toman muestras del procedimiento actual y del nuevo, para determinar si el nuevo tiene como resultado una mejoría. Si se encuentra que 75 de 1500 artículos del procedimiento actual son defectuosos y 80 de 2000 artículos del procedimiento nuevo también lo son, encuentre un intervalo de confianza de 90% para la diferencia real en la fracciòn de defectuosos entre el proceso actual y el nuevo. 
+
+```{r}
+prop.test(340,500,conf.level = 0.95)
+```
+**Teorema** si $\hat{p}$ se utiliza como una estimación de $p$, podemos tener una confianza de $(1-\alpha)100\%$ de que el error no excederá $z_{\alpha/2}\sqrt{\hat{p}\hat{q}/n}$
+
+### Selección tamaño de la muestra
+**Teorema**Si $\hat{p}$ se utiliza como estimación de $p$, podemos tener una confianza de $(1-\alpha)100\%$ de que el error será menos que una cantidad específica $e$ cuando el tamaño de la muestra sea aproximadamente 
+$$n=\frac{z_{\alpha/2}\hat{p}\hat{q}}{4e^2}$$
+**Ejemplo** ¿Qué tan grande se requiere que se a una muestra en el ejemplo anterior si queremos tener 95% de confianza de que nuestraestimación de $p$ esté dentro de 0.02
+
+
+
+
+```{r}
+tamano_muestra <-function(alpha, error){
+  z=qnorm(alpha/2, lower.tail = FALSE)
+  n=(z**2)/(4*(error)**2)
+  print(n)
+}
+```
+
+```{r}
+tamano_muestra(0.05,0.02)
+```
+```{r}
+prop.test(340,2401,conf.level = 0.95)
+```
+
+
+## Dos muestras: Estimación de la diferencia entre dos proporciones.
+
+#### Intervalo de confianza $\p_1 - \p_2$ de una muestra grande. 
+
+Si $\hat{p}_1$ y $\hat{p}_2$ son las proporciones de éxitos en muestras aleatorias de tamaño $n_1$ y $n_2$ respectivamente, $\hat{q}_1=1-\hat{p}_1$, y $\hat{q}_2=1-\hat{p}_2$, un intervalo de confianza aproximado de $(1-\alpha)100\%$ para la diferencia de dos parámetros binomiales $p_1 - p_2$, está dado por
+$$(\hat{p}_1 - \hat{p}_2)-z_{\alpha/2}\sqrt{\frac{\hat{p}_1\hat{q}_1}{n_1}+\frac{\hat{p}_2\hat{q}_2}{n_2}}<p_1-p_2$$
+
+$$<(\hat{p}_1-\hat{p}_2)+z_{\alpha/2}\sqrt{\frac{\hat{p}_1\hat{q}_1}{n_1}+\frac{\hat{p}_2\hat{q}_2}{n_2}}$$
+
+donde $z_{alpha/2}$ es el valor $z$ que deja una área de $\alpha/2$ a la derecha
+
+**Ejemplo**  Se considera cierto cambio en un proceso de fabricaciòn de partes componentes. Se toman muestras de procedimiento actual y del nuevo, para determinar si el nuevo tiene como resultado una mejoría. Si se encuentra 75 de 1500 artículos del procedimiento actual son defectuosos y de 80 de 2000 artículos del procedimiento nuevo también lo son, encuentre un intervalo de confienza de 90% para la diferencia real en fracción de defectuosos entre el proceso actual y el nuevo. 
+
+```{r}
+n_articulos_ac = 1500
+n_defec_ac =75
+
+n_articulos_nu = 2000
+n_defec_nu = 80
+
+p_gorro_1 = n_defec_ac/n_articulos_ac
+
+p_gorro_2 = n_defec_nu/n_articulos_nu
+```
+
+y la estimación puntual: 
+```{r}
+p_gorro_1-p_gorro_2
+```
+```{r}
+q_gorro_1 =(1-p_gorro_1)
+q_gorro_2 = (1-p_gorro_2)
+
+```
+
+
+```{r}
+qnorm(1-0.05)
+```
+
+
+```{r}
+alpha=qnorm(1-0.05)*sqrt(((p_gorro_1*q_gorro_1)/n_articulos_ac)+((p_gorro_2*q_gorro_2)/n_articulos_nu))
+alpha
+```
+```{r}
+(p_gorro_1-p_gorro_2)-alpha
+```
+```{r}
+(p_gorro_1-p_gorro_2)+alpha
+```
+Como el nuevo intervalo contiene el valor 0,  no hay razón para creer que el nuevo procedimiento resultó en una disminución significativa en la proporción de artículos defectuosos, comparado con el método actual.
+
+
+```{r}
+prop.test(x=c(75,80),n=c(1500,2000), conf.level = 0.9, alternative = "two.sided")
+```
+
+## Una sola muestra: Estimación de la varianza
+
+#### Intervalo de confianza para $\sigma^{2}$
+
+Si $s^2$ es la varianza de una muestra aleatoria de tamaño $n$ de una población normal, un intervalo de confianza de $(1-\alpha)100\%$ para $\sigma^2$ es
+$$\frac{(n-1)s^2}{\chi^{2}_{\alpha/2}}<\sigma^2<\frac{(n-1)s^2}{\chi^{2}_{1-\alpha/2}}$$
+donde $\chi^{2}_{\alpha/2}$ y $\chi^{2}_{1-\alpha/2}$ son valore de $\chi^{2}$ con $v=n-1$ grados de libertad, que deja áreas de $\alpha/2$ y $1-\alpha/2$, respectivamente, a la derecha. 
+
+**Ejemplo** Los siguientes  son los pesos, en decagramos, de 10 paquetes de semillas para césped distribuidas por cierta compañia
+```{r}
+semillas <-c(46.4, 46.1, 45.8, 47.0, 46.1, 45.9,45.8, 46.9, 45.2, 46.0)
+semillas
+```
+Encuentre un intervalo de confianza del 95% para la varianza de todos los paquetes de semillas para césped que distribuye esta compañía. Suponga población normal: 
+
+```{r}
+semillas<-data.frame(semillas)
+sd_2=(sd(semillas$semillas))^2
+sd_2
+```
+
+```{r}
+q_chi_1=qchisq(1-0.025, df=9) 
+q_chi_1
+```
+```{r}
+q_chi_2=qchisq(0.025, df=9) 
+q_chi_2
+```
+```{r}
+(sd_2*9)/q_chi_1
+```
+```{r}
+(sd_2*9)/q_chi_2
+```
+```{r}
+v = var(semillas$semillas);  n = length(semillas$semillas)
+     
+(n-1)*v/qchisq(c(.975,.025), n-1)
+
+```
+
+
+## Dos muestras: Estimación de la razón de dos varianzas
+
+#### Intervalo de confianza para $\sigma_{1}^{2}/\sigma_{2}^{2}$
+
+Si $s^{2}_{1}$ y $s_{2}^{2}$ son las varianzas de muestras independientes de tamaño $n_1$ y $n_2$, respectivamente, de poblaciones normales, entonces un intervalo de confianza de $(1-\alpha)100\%$ para $\sigma_{1}^{2}/\sigma_{2}^2$ es
+
+$$\frac{s_{1}^2}{s_{2}^{2}}\frac{1}{f_{\alpha/2}(v_1,v_2)}<\frac{\sigma_2^{1}}{\sigma_{2}^{2}}<\frac{s_{1}^{2}}{s_{2}^{2}}f_{\alpha/2}(v_2,v_1)$$
+donde $f_{\alpha/2}(v_1,v_2)$ es un valor $f$ con $v_1 = n_1 -1$ y $v_2 = n_2 -1$ grados de libertad que deja un área de $\alpha/2$ a la derecha, y  $f_{\alpha/2}(v_2,v_1)$ es un valor $f$ similar con $v_2 = n_2 -1$ y $v_1 = n_1 -1$ grdaos de libertad 
+
+**Ejemplo** 
+```{r}
+A<-rnorm(15, mean=3.84, sd=3.07)
+B<-rnorm(12, mean=1.49,sd=0.80)
+var.test(A,B)
+```
+
+
+# Pruebas de hipótesis de una y dos muestras
+
+## Hipótesis estadísticas: Conceptos generales. 
+**Definición** Una **hipótesis estadísticas** es una severación o conjetura respecto a una o más poblaciones
+
+
+
+### Hipótesis nula e hipótesis alternativa 
+
+
+
+## Prueba de una hipótesis estadisticas
+
+### El estadístico de prueba. 
+
+**Definición** El rechazo de la hipótesis nula cuando es verdadera se llama **error tipo I**
+
+**Definición** No rechazar la hipótesis nula cuando es falsa se llama **error tipo II**
+
+**Definición** La **potencia** de una prueba es la probabilidad de rechazar $H_{0}$ dado que una alternativa especifica es verdadera. 
+
+## Pruebas de una y dos colas
+
+Una prueba de cualquier hipótesis estadística, donde la alternativa es **unilateral**, como 
+$$H_{0}: \theta=\theta_{0}, \hspace{0.5cm}H_{1}:\theta>\theta_{0}$$
+o quizas
+$$H_{0}: \theta=\theta_{0},\hspace{0.5cm}H_{1}:\theta<\theta_{0}$$ 
+Se denomina prueba de una sola cola.
+
+Una prueba de cualquier hipótesis alernativa donde la alternativa sea bilateral, como 
+$$H_{0}:\theta=\theta_{0}, \hspace{0.5cm}H_{1}:\theta \not=\theta_{0}$$
+Se llama prueba de dos colas, ya que la región critica se divie en dos partes, que a menudo tienen probabilidades iguales que se colocan en cada cola de la distribución
+
+### ¿Cómo se eligen las hipótesis nula y alternativa?
+
+
+**Ejemplo** Una fabricante de cierta marca de cereal
+de arroz afirma que el contenido promedio de grasa saturada no excede de 1.5 gramos. Establezca la hipotesis nula y alternativa a utilizar para probrar esta afirmación y determina dónde se localiza la región crítica. 
+
+La afirmación del fabricante se debería rechazar sólo si $\mu$ es mayor que 1.5 miligramos y no se debería rechazar si $mu$ es menor o igual que 1.5 miligramos. Entonces probramos
+$$H_{0}: \mu = 1.5,\hspace{0.5cm}H_{1}:\mu>1.5$$
+De manera que el no rechazo de $H_{0}$ no descara valores de 1.5 miligramos. Como tenemos una pruena de una cola, el símbolo mayor que indica que la región critica yace por completo en la cola derecha de la distribución de nuestro estadístico de prueba $\bar{X}$.
+
+**Ejemplo** Un agente de bienes raíces afirma que 60% de todas la viviendas privadas que se contruyen actualmente son casas con tres dormitorios. Para probar esta afirmación, se inspecciona una muestra grande de viviendas nuevas. La proporción de tales casas con rtes dormitorios se registra y se utiliza como estadístico de prueba. Establezca las hipótesis nula y alternativa a utilizarse en esta prueba y determina la posición de la región critica. 
+
+Si el estadístico de prueba fuera considerablemente mayor o menor que $p=0.6$, rechazariamos la afirmación del agente, por lo que deberíamos establece la hipótesis $$H_{0}: p=0.6, \hspace{0.5cm}H_{1}:p\not=0.6$$
+
+La hipótesos alternativa implica una prueba de dos colas con la región critica dividad por igual en ambas colas de la distribución de $\hat{P}$, nuestro estadístico de prueba. 
+
+
+## Uso de valores $P$ para la toma de decisiones en la prueba de hipótesis
+
+
+
+**Definición** Un valor $P$ es el nivel (de significancia) más bajo donde es significativo el valor observado del estadístico de prueba. 
+
+#### Aproximación a la prueba de hipótesis con probabilidad ija del error tipo I
+1. Establezca la hipótesis nula y alternativa. 
+2. Elija un nivel de significancia $\alpha$ fijo. 
+3. Seleccione una estadístico de prueba adecuado y establezca la región critica con base en $\alpha$.
+4. A partir del estadístico de pruena calculado, rechace $H_{0}$ si el estadistico de prueba está en la región crítica. De otra manera, no rechace $H_{0}$
+5. Obtenga conclusiones científicas y de ingeniería. 
+
+#### Prueba de significancia. 
+1. Establezca las hipótesis nula y alternativa. 
+2. Elija un estadístico de prueba adecuado. 
+3. Calcule el valor $P$ con base en los valores calculados des estadístico de prueba. 
+4.Utilice el juicio con base en el valor $P$ y reconozca el sistema científico. 
+
+
+## Una sola muestra: Pruebas con respecto a una sola media (varianza conocida)
+
+#### Procedimiento de una prueba para una sola media. 
+
+$$z = \frac{\bar{x}-\mu_{0}}{\sigma/\sqrt{n}}>Z_{\alpha/2}\hspace{0.5cm}o\hspace{0.5cm}\frac{\bar{x}-\mu_{0}}{\sigma/\sqrt{n}}<-z_{\alpha/2}$$
+Si $-z_{\alpha/2}<z<z_{\alpha/2}$ no se rechaza $H_{0}$. El rechazo de $H_{0}$, desde luego implica la aceptación de la hipótesis alternativa $\mu \not= \mu_{0}$. Con esta definición la región critica debería quedar claro que habrá la probabilidad de $\alpha$ de rechazar $H_{0}$ (que cae en la región crítica) cuando en realidad. $\mu=\mu_{0}$
+
+**Ejemplo** Una muestra aleatoria de 100 muertes registradas en Estados Unidos al año pasado mostró una vida promedio de 71.8 años. Suponiendo una deviación estándar poblacional de 8.9 años. ¿esto parece indicar que la vida media actual es mayor que 70 años? utilice un nivel de siginificancia de 0.05. 
+1. $H_{0}: \mu=70 años$
+2. $H_{1}: \mu >70 años$
+3. $\alpha = 0.05$
+
+4. Región crítica: $z>1.645$, donde $z=\frac{\bar{x}-\mu_{0}}{\sigma/ \sqrt{n}}$
+
+```{r}
+qnorm(0.05, lower.tail = FALSE)
+```
+```{r}
+normalizar<-function(value,mean,sd,n){
+  z=(value-mean)/(sd/sqrt(n))
+  print(z)
+}
+```
+
+```{r}
+z=normalizar(71.8, 70, 8.9, 100)
+```
+
+
+
+```{r}
+pnorm(z, lower.tail = FALSE)
+```
+Como resultado, la evidencia a favor de $H_{1}$ es mayor incluso que la sugerida por un nivel de significancia de $0.05$
+
+**Ejemplo** Un fabricante de un equipo deportivo desarrolló un nuevo sedal para pesca sintético que afirma que tiene una resistencia media a la rotura de 8 kilogramos con una desviación estándar de 0.5 kilogramos. Pruebe la hipótesis de que $ \mu = 8$ kilogramos contra la alternativa de que $\mu \not = 8$, si se prueba una muestra aleatoria de 50 sedales, y se encuentra que tiene una resistencia media a la rotura de $7.8$ kilogramos. Utilice un nivel de significancia de 0.01
+
+1. $H_{0}: \mu=8$
+2. $H_{1}: \mu \not = 8$
+3. \alpha = 0.01$
+
+```{r}
+#La función qnorm permite enontrar el cuantíl (percentil) Q para cualquier probabilidad p.
+qnorm((0.01)/2)
+```
+```{r}
+#La función qnorm permite enontrar el cuantíl (percentil) Q para cualquier probabilidad p.
+qnorm(1-(0.01)/2)
+```
+
+4. Región critica $z<-2.575$ y $z>2.575$
+
 ```{r}
 
 ```
 
+```{r}
+2*pnorm(-2.83, lower.tail = TRUE)
+```
+Que nos permite rechazar la hipótesis nula de que $\mu=8$ kilogramos en un nivel de significacnia menor que $0.01$
+
+## Relación con la estimación del intervalo de confianza. 
+
+
+
+
+## Una sola muestra: Pruebas sobre una sola media (varianza desconocida)
+
+#### El estadístico $t$ para una pruena en una sola media (varianza desconocida)
+
+
+$$t = \frac{\bar{x}-\mu_{0}}{s/\sqrt{n}}$$
+Para la hipótesis bilateral en un nivel de significancia $\alpha$, se aplican las regiones críticas de dos colas. Para $H_{1}: \mu > \mu_{0}$, el rechazo resulta cuando $t>t_{\alpha , n-1}$. Para $H_{1}: \mu<\mu_{0}$, la región crítica está dada por $t>-t_{\alpha, n-1}$
+
+**Ejemplo** El *el instituto Eléctrico Edison* publica cifras del número anual del kilowatts-horas que gastan varios aparatos electrodomésticos. Se afirma que una aspiradora gasta un promedio de 46 kilowatts-hora al año. Sin una muestra aleatoria de 12 hogares que se incluye en un estudio planeado incida que las aspiradores gastan un promedio de 42 kilowatts-hora al año con una desviación estándar de 11.9 kilowatts-hora, ¿en un nivel de significancia de 0.05 esto sugiere que las aspiradoras gastan, en promedio, menos de 46 kilowatts-hora anualmente? Suponga que la población de kilowatts-hora es normal
+
+1. $H_{0}: \mu = 46 kilowatts-ahora$
+2. $H_{1}: \mu < 46 kilowatts-ahora$
+3. $\alpha=0.05$
+
+4. Región crítica. 
+```{r}
+alpha= 0.05
+qt(alpha,11)
+```
+5. Cálculos: $\bar{x}=42$ kilowatts-hora $s=11.9$ kilowatts-hora y $n=12$. De aquí.
+```{r}
+n = 12
+x = 42
+mu = 46
+sigma = 11.9
+
+
+t = (x-mu)/(sigma/sqrt(n))
+t
+```
+
+
+```{r}
+pt(t,n-1)
+```
+6. Decisión: No rechace $H_{0}$ y concluya que el número promedio de kilowatts-hora que gastan al año las aspiradoras domésticas no es significativamente menos que 46. 
+
+
+## Dos muestras: Pruebas sobre medias.
+
+### Varianza desconocidas pero iguales. 
+
+#### Prueba $T$ combinada de dos muestras. 
+
+$$t = \frac{(\bar{x}_{1}-\bar{x}_{2})-d_{0}}{s_{p}\sqrt{1/n_{1}+1/n_{2}}}$$
+donde
+$$s_{p}^{2}= \frac{s_{1}^{2}(n_{1}-1)+s_{2}^{2}(n_{2}-1)}{n_{1}+n_{2}-2}$$
+Se incluye la distribución $t$ y no se rechaza la hipótesis bilateral cuando
+$$-t_{\alpha/2,n_{1}+n_{2}-2}<t<t_{\alpha/2,n_{1}+n_{2}-2}$$
+Para $H_{1}:\mu_{1}-\mu_{2}>d_{0}$, rechace $H_{0}:\mu_{1}-\mu{2}=d_{0}$ cuando $t>t_{\alpha, n_{1}+n_{2}-2}$
+
+**Ejemplo** Se lleva a cabo un experimento para comparar el desgaste por abrasivos de dos diferentes materiales laminados. Se prueban 12 piezas del material 1 exponiendo cada pieza a una máquina para medir desgaste. Diez piezas del material 2 se prueban de manera similar. En cada caso, se observa la profundidad del desgaste. Las muestras del material 1 dan un desgaste promedio (codificado) de 85 unidades con una desviación estándar muestras del 4; en tanto que la smuestras del material 2 dan un promedio de 81 y una desviación estándar muestras de 5. ¿Podríamos concluir, con un nivel de significancia de 0.05, que el desgaste abrasivo del material 2 excede el material 2 en más de 2 unidades? Suponga que las poblaciones son aproximadamente normales con varianzas iguales. 
+
+1. $H_{0}: \mu_{1}-\mu_{2}=2$.
+2. $H_{1}:\mu_{1}-\mu_{2}>2$
+3. $\alpha = 0.05$
+4. Región crítica: $t> 1.725$, donde $t = \frac{(\bar{x}{1}-\bar{x}_{2})-d_{0})}{s_{p}\sqrt{1/n_{1}-1/n_{2}}}$, con $v=20$ grados de libertad.
+5. Cálculos
+```{r}
+x_1 = 85
+x_2 = 81
+s_1 = 4
+s_2 = 5
+n_1 = 12
+n_2 = 10
+
+a = (s_1)**2 *(n_1-1)
+b = (s_2)**2 *(n_2-1)
+c = n_1 + n_2 -2
+
+s_p2 = (a+b)/c
+s_p=sqrt(s_p2)
+  
+```
+
+```{r}
+t = ((x_1 -x_2)-2)/(s_p*sqrt(1/12 + 1/10))
+t
+```
+```{r}
+pt(t,df=20, lower.tail = FALSE)
+```
+6. Decisión: no rechace $H_{0}$. Somos incapaces de concluir que el desgaste abrasivo del material 1 excede el del material 2 en más de dos unidades. 
+
+### Varianzas desconocidas pero diferentes. 
+
+$$T' = \frac{(\bar{X}_{1}-\bar{X}_{2})-d_{0}}{\sqrt{s_{1}^{2}/n_{1}+s_{2}^{2}/n_{2}}}$$
+tiene distribución $t$ aproximada con grados de libertad aproximados.
+
+$$v = \frac{(s_{1}^{2}/n_1 + s_{2}^{2}/n_{2})^{2}}{(s_{1}^{2}/n_1)^{2}/(n_1 -1)+ (s_{2}^{2}/n_2)^{2}/(n_2-1)}$$
+El resultado del procedimiento de prueba es *no rechazar* $H_{0}$ cuando
+
+$$-t_{\alpha/2,v}<t'<t_{\alpha/2, v}$$
+### Observaciones pareadas. 
+
+El cálculo del intervalo de congianza para $\mu_{1}-\mu_{2}$ en la situación con observaciones pareadas se basa en la variable aleatoria.
+
+$$T = \frac{\bar{X}-\mu_{D}}{S_{d}/\sqrt{n}}$$
+donde $\bar{D}$ y $S_{d}$ son variables aleatorias que representan la media muestral y las desviaciones estándar de las diferencias de las observaciones en las unidades experimentales. Como en el caso de la prueba $t$ combinada, la suposición es que las observaciones de cada población son normales. Este problema de dos muestras se reduce en esencia a una problema de una muestra utilizando las diferencias calculadas $d_{1}, d_{2}, ...,d_{n}$. De esta manera, la hipótesis se reduce a $$H_{0}: \mu_{D}=\mu_{0}$$
+
+El estadístico de prueba calculado está dado entonces por. 
+$$t = \frac{\bar{d}-d_{0}}{s_{d}/\sqrt{n}}$$
+Las regiones críticas se construyen usando la distribución $t$, con $n-1$ grados de libertad. 
+
+**ejemplo** En un estudio realizado en el Departamento de Silvicultura y Fauna del Instituto Politécnico y Universidad Estatal de Virginia, J.A. Wesson examinó la influencia del fármaco *succinylcholine* sobre los niveles de circulación de andrógenos en la sangre. Se obtuvieron muestras sanguíneas de venados salvajes vía ña vena yugular, inmediatamente después de una inyección intramuscular de succinylcholine con dardos de un rifle de caza. Los venados se sangraron nuevamente aproximadamente 30 minutos después de la inyección y luego se libraron. Los niveles de andrógenos al momento de la captura y 30 minutos más tarde, medidos en nanogramos por mililitro (ng/ml), para 15 venados se presentan en la siguiente tabla. 
+
+
+```{r}
+venado<-c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
+al_momento <-c(2.76, 5.18, 2.68, 3.05, 4.10, 7.05, 6.60, 4.79, 7.39, 7.30, 11.78, 3.90, 26.00, 67.48, 17.04)
+despues <-c(7.02, 3.10, 5.44, 3.99, 5.21, 10.26, 13.91, 18.53, 7.91, 4.85, 11.10, 3.74, 94.03, 94.03, 41.70)
+d_i = despues- al_momento
+
+tabla<-data.frame(venado, al_momento,despues, d_i )
+tabla
+
+```
+Suponiendo que las poblaciones de andrógenos al momento de la inyección y 30 minutos después se distribuyen normalmente, pruebe con un nivel de significancia de 0.05 si las concentraciones de andrógenos se alteran después de 30 minutos de encierro, 
+
+1. $H_{0}: \mu_{1}=\mu_{2}$ o $\mu_{D}=\mu_{1}-\mu_{2}=0$.
+2. $H_{1}: \mu_{1}\not=\mu_{2}$ 0 $\mu_{D}=\mu_{1}-\mu_{2}\not=0$
+3. $\alpha=0.05$.
+4. Región crítica: $t<-2.145$ y $t>2.145$, donde $t=\frac{\bar{d}-d_{0}}{s_{D}/\sqrt{n}}$ con $v=14$ grados de libertad. 
+```{r}
+qt(0.05/2, df=14,lower.tail = TRUE)
+```
+```{r}
+qt(0.05/2, df=14,lower.tail = FALSE)
+```
+5. Cálculos: la media muestral y la desviación estándar para las $d_{i}$ son $\bar{d}=9.848$ y $s_d=18.474$
+
+```{r}
+mean(tabla$d_i)
+```
+```{r}
+sd(tabla$d_i)
+```
+Por lo tanto, $$t=\frac{9.848-0}{18.474/\sqrt{15}}=2.06$$
+
+6. Aunque el estadístico $t$ no es significativo al nivel $0.05$,
+```{r}
+2*pt(2.06,df=14, lower.tail = FALSE)
+```
+Como resultado, existe alguna evidencia de que hay una diferencia en los niveles medios circulantes de andrógenos. 
+
+```{r}
+t.test(tabla$al_momento, tabla$despues, alternative= 'two.sided')
+```
+
+## Elección del tamaño de la muestra para probar medias. 
+
+**Ejemplo** Suponga que deseamos probar las hipótesis 
+$$H_{0}: \mu=68kg, \hspace{0.5cm}H_{1}:\mu>68kg$$
+para los pesos de estudiantes hombres en cierta universidad usando un nivel de significancia $\alpha=0.05$ cuando se sabe que $\simga=5$. Encuentre el tamaño muestral que se requiere si la potencia de nuestra prueba debe ser $0.95$ cuando la media real es $69$ kilogramos. 
+
+```{r}
+z_alpha = qnorm(0.05, lower.tail =FALSE)
+z_alpha
+```
+```{r}
+n = ((z_alpha+z_alpha)**2)*25 
+n
+```
+Por lo tanto, se requieren 271 observaciones si la prueba debe rechazar las hipótesis nula $95%$ de las veces cuando, de hecho $\mu$ es tan grande como 69 kilogramos. 
+
+## El caso de dos muestras. 
+**Ejemplo** Al comparar el comportamiento de dos catalizadores sobre el efecto del rendimiento de una reacción, se realiza una prueba $t$ de dos muestras con $\alpha = 0.05$. Las varianzas de los rendimientos se consideran las mismas para los dos catalizadores. ¿De qué tamaño se necesita una muestra para cada catalizador, si se desea probar la hipótesis $$H_{0}:\mu_{1}=\mu_{2}, \hspace{0.5cm}H_{1}:\mu_{1}\not= \mu_{2}$$
+si es esencial detectar una diferencia de $0.8\sigma$ entre los catalizadores con probabilidad 0.9?
+
+
+
+## Métodos gráficos para comparar medias. 
+
+
+
+## Una muestra: Prueba sobre una sola proporción
+
+
+#### Prueba de una proporción: muestas pequeñas
+
+1. $H_{0}: p=p_{0}$
+2. Una de las alternativas $H_{1}:p<p_{0}, p>p_{0}$, o$p\not=p_{0}$
+3. Elija un nivel de significancia igual a $\alpha$
+4. Estadística de prueba: variable binomial $X$ con $p=p_{0}$
+5. Cálculos: Encuentre $x$, el número de éxitos, y calcule el valor $P$ adecuado.
+6. Decisión. Obtenga las conclusiones apropiadas basadas en el valor $P$.
+
+**Ejemplo** Constructor afirma que se instalan bombas de calor en el 70% de todas las casas que se construyen actualemente en la ciudad de Richmond, Virginia. ¿Estaría de acuerdo con esta afirmación, si una encuesta aleatoria de casas nuevas en esta ciudad demuestra que 8 de 15 tiene instaladas bombsa de calor? Utilice un nivel de significancia de 0.010
+
+1. $H_{0}:p=0.7$
+2. $H_{1}:p\not=0.7$
+3. $\alpha=0.1$
+4. Estadístico de prueba: Variable binomial $X$ con $p=0.7$ y $n=15$
+5. Cálculos: $x=8$ y $np_{0}=(15)(0.7)$
+```{r}
+n = 15
+p_gorro=0.7
+n*p_gorro
+
+```
+```{r}
+n*(1-p_gorro)
+```
+
+```{r}
+2*pbinom(8,15,prob=0.7, lower.tail = TRUE)
+```
+
+6. Decisión: No rechace $H_{0}$. Concluya que no hay razón suficiente para dudar de la afirmación del constructor.
+
+**Ejemplo** Un medicamento que se prescribe comúnmente para aliviar la tensión nerviosa se considera que es efectivo en tal sólo 66%. Resultados experimentales con un nuevo fármaco que se suministra a una muestra aleatoria de 100 adultos que padecen tensión nerviosa demuestran que 70 tuvieron alivio. ¿Ésta es evidencia suficiente para concluir que el nuevo medicamento es superior a la que se prescribe actualmente? Utilice un nivel de significancia de 0.05.
+
+1. $H_{0}: p= 0.6$
+2. $H_{1}: p>0.6$
+3. $\alpha=0.05$
+4. Región crítica: $z>1.645$
+```{r}
+qnorm(0.05, lower.tail=FALSE)
+```
+```{r}
+x = 70
+n = 100
+p_gorro = 70/100
+p_ant = 0.6
+z=(p_gorro-p_ant)/sqrt((p_ant*(1-p_ant))/100)
+z
+```
+```{r}
+pnorm(z, lower.tail = FALSE)
+```
+6. Decisión: Rechace $H_{0}$ y concluya que el nuevo fármaco es superior. 
+
+
+
+## Pruebas sobre dos proporciones
+
+**Ejemplo** Se tomará el voto entre los residentes de una ciudad y el condado circundante, para determinar si se debe construir la planta química que se propone. El lugar de construcción está dentro ed los límites de la ciudad y, por esa razón, muchos votantes del condado consideran que la propuesta pasará debido a la gran proporción de votantes que favorecen que favorecen la construcción. Para determinar si hay una diferencia siginificativa en la proporción de votantes de la ciudad y votantes del condado que favorecen la propuesta, se realiza una encuesta. Si 120 de 200 vontantes de la ciudad favorecen la propuesta y 240 de 500 residentes del condado también lo hace, ¿estaría usted de acuerdo en que la proporción de votantes de la ciudad que favorecen la propuesta es mayor que la proporción de votantes del condado? Utilice un nivle de significancia de 0.025
+
+Sean $p_1$ y $p_2$ las proporciones reales de votantes en la ciudad y el condado, respectivamente, que favorecen la propuesta.
+1. $H_{0}:p_1 = p_2$
+2. $H_{1}: p_1>p_2$
+3. $\alpha=0.05$
+4.Región crítica: $z>1.645$
+
+```{r}
+qnorm(0.05, lower.tail = FALSE)
+```
+5. Cálculos
+```{r}
+x_1=120
+n_1=200
+x_2=240
+n_2=500
+p_1=x_1/n_1
+p_2=x_2/n_2
+p=(x_1+x_2)/(n_1+n_2)
+z=(p_1-p_2)/sqrt(p*(1-p)*(1/n_1 + 1/n_2))
+print(z)
+
+```
+
+```{r}
+pnorm(z, lower.tail = FALSE)
+```
+6. Desición: Rechace $H_{0}$ y esté de acuerdo en que la proporción de votantes de la ciudad a favor de la propuesta a favor de la propuesta es mayor que la proporción de votantes del condado. 
+
+
+
+## Pruebas de una y dos muestras referentes a varianzas
+
+**Ejemplo** Un fabricante de baterías para automovil afirma que la duración de sus baterías se distribuye de forma aproximadamente normal con una desviación estándar igual a 0.9 años. Si una muestra aleatoria de 10 de tales baterías tiene una desviación estándar de 1.2 años ¿considera que $\sigma>0.9$? Utilice un nivel de significancia de 0.05
+
+1. $H_{0}:\sigma^2=0.81$
+2. $H_{1}: \sigma^2>0.81$
+3. $\alpha=0.05$
+4. Región crítica
+```{r}
+qchisq(0.05, df=9, lower.tail = FALSE)
+```
+5. Cálculos
+```{r}
+x_chi=(9*1.44)/(0.81)
+x_chi
+```
+```{r}
+pchisq(16, df=9, lower.tail = FALSE)
+```
+6. Decisión: El estadístico $\chi^{2}$ no es significativo suficiente en el nivel 0.05. Sin embargo, con base en el valor de $P$ de 0.07, hay alguna evidencia de que $\sigma>0.9$
+
+```{r}
+library(EnvStats)
+A<-rnorm(10,sd=2)
+varTest(A, sigma.square=(0.9)**2,alternative = "greater",conf.level = (1-0.05))
+```
+
+## Pruebas de una y dos muestras referentes a varianzas 
+
+#### Prueba bondad de ajuste. 
+Una prueba de la bondad de ajuste entres las frecuencias observadas y esperadas se basas en la cantidad
+$$\chi^{2}=\sum_{i=1}^{k}\frac{(o_i - e_i)^2}{e_i}$$
+donde $\chi^2$ es un valor de una variagle aleatoria cuya distribución muestra se aproxima muy de cerca con la distribución chi cuadrada con $v=k-1$ grados de libertad. Los símbolos $o_i$ y $e_i$ representan las frecuencias observadas y esperada respectivamente, para la $i-$ésima celda. 
+
+
+
+## Prueba de bondad de ajuste. 
+## Prueba de independencia (datos categóricos)
+## Prueba de homogeneidad
 
 
